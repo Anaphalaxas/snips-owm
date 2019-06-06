@@ -19,7 +19,7 @@ class OWMWeatherProvider(WeatherProvider):
         :param location: The location of the forecast, e.g. 'Paris,fr' or
                          'Eiffel Tower'
         """
-        url = "{}?APPID={}&q={}&units=metric".format(self.API_WEATHER_ENDPOINT,
+        url = "{}?APPID={}&q={}&units=imperial".format(self.API_WEATHER_ENDPOINT,
                                                      self.api_key,
                                                      location)
         r = requests.get(url)
@@ -51,7 +51,7 @@ class OWMWeatherProvider(WeatherProvider):
         :return: description of the asked weather and the temperature
         :rtype: (str, int)
         """
-        url = "{}?APPID={}&q={}&units=metric".format(self.API_FORECAST_ENDPOINT,
+        url = "{}?APPID={}&q={}&units=imperial".format(self.API_FORECAST_ENDPOINT,
                                                      self.api_key,
                                                      location)
         r = requests.get(url)
