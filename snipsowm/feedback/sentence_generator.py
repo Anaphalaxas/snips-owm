@@ -185,7 +185,8 @@ class ConditionQuerySentenceGenerator(AnswerSentenceGenerator):
                                     tone=AnswerSentenceGenerator.SentenceTone.POSITIVE,
                                     date=None, granularity=0,
                                     condition_description=None,
-                                    POI=None, Locality=None, Region=None, Country=None):
+                                    POI=None, Locality=None, Region=None, Country=None,
+                                    Temperature=None):
         """
             The sentence is generated from those parts :
                 - introduction (We answer positively or negatively to the user)
@@ -208,16 +209,23 @@ class ConditionQuerySentenceGenerator(AnswerSentenceGenerator):
         introduction = self.generate_sentence_introduction(tone)
 
         locality = self.generate_sentence_locality(POI, Locality, Region, Country)
-
+        if locality is not None and str(locality) in ["in 14623","in Rochester,US"]:
+            locality = "in Rochester"
         date = self.generate_sentence_date(date, granularity=granularity)
 
         permutable_parameters = list((locality, date))
         random.shuffle(permutable_parameters)
-        parameters = (introduction, condition_description) + tuple(permutable_parameters)
+        forecast = condition_description
+        if Temperature:
+            forecast = ["%s and %i" % (condition_description, Temperature), "%i and %s" % (Temperature, condition_description)]
+            forecast = random.choice(forecast)
+        parameters = (introduction, forecast) + tuple(permutable_parameters)
 
         # Formatting
         parameters = filter(lambda x: not x is None and len(x) > 0, parameters)
-        return ("{} " * len(parameters)).format(*parameters)
+
+        result = ("{} " * len(parameters)).format(*parameters)
+        return result
 
 
 class TemperatureQuerySentenceGenerator(AnswerSentenceGenerator):

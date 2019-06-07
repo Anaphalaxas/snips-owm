@@ -64,7 +64,6 @@ class OWMWeatherProvider(WeatherProvider):
             raise OpenWeatherMapAPIKeyError(response['message'])
 
         response = self._getTopicalInfos(response, datetime)
-
         try:
             description = response["weather"][0]["id"]
         except (KeyError, IndexError, UnicodeEncodeError):
@@ -97,7 +96,7 @@ class OWMWeatherProvider(WeatherProvider):
     def _getTopicalInfos(self, response, date_time):
         delta = date_time - datetime.datetime.strptime(response["list"][0]['dt_txt'], "%Y-%m-%d %H:%M:%S")
         delta = abs(delta)
-        result = {}
+        result = response["list"][0]
 
         for time_interval in response["list"]:
             current_time = datetime.datetime.strptime(time_interval['dt_txt'], "%Y-%m-%d %H:%M:%S")

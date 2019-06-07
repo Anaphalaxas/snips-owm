@@ -114,7 +114,6 @@ class SnipsOWM:
         sentence_generator = ConditionQuerySentenceGenerator(locale=self.locale)
         try:
             actual_condition, temperature = self.provider.get_weather(locality, date)
-
             # We retrieve the weather from our weather provider
             actual_condition_group = weather_condition.OWMToWeatherConditionMapper(actual_condition).resolve()
 
@@ -122,7 +121,6 @@ class SnipsOWM:
                 # We find the category (group) of the received weather description
                 assumed_condition_group = weather_condition.SnipsToWeatherConditionMapper().fuzzy_matching(self.locale,
                                                                                                            assumed_condition).resolve()
-
                 # We check if their is a positive/negative tone to add to the answer
                 if assumed_condition_group.value != weather_condition.WeatherConditions.UNKNOWN:
                     tone = AnswerSentenceGenerator.SentenceTone.NEGATIVE if assumed_condition_group.value != actual_condition_group.value else AnswerSentenceGenerator.SentenceTone.POSITIVE
@@ -136,7 +134,8 @@ class SnipsOWM:
                                                                                     self.locale),
                                                                                 POI=POI, Locality=Locality,
                                                                                 Region=Region,
-                                                                                Country=Country)
+                                                                                Country=Country,
+                                                                                Temperature=temperature)
 
             # And finally send it to the TTS if provided
         except (WeatherProviderError, WeatherProviderConnectivityError):

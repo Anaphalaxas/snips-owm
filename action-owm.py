@@ -78,15 +78,16 @@ def getDateTime(snips):
     # Determine datetime
     if snips.slots.forecast_start_datetime:
         tmp = snips.slots.forecast_start_datetime[0].slot_value.value
+        print("CHANCE: tmp |" + str(tmp.value) + "|")
         if tmp is None:
             return None
         if isinstance(tmp, hermes_python.ontology.dialogue.InstantTimeValue ):
-            val = tmp.value[:-7]
-            return datetime.strptime(val, '%Y-%m-%d %H:%M:%S')
+            val = tmp.value
+            return datetime.strptime(val[0:19], '%Y-%m-%d %H:%M:%S')
         elif isinstance(tmp, hermes_python.ontology.dialogue.TimeIntervalValue ):
-            t0 = tmp.from_date[:-7]
+            t0 = tmp.from_date[0:19]
             t0 = datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
-            t1 = tmp.to_date[:-7]
+            t1 = tmp.to_date[0:19]
             t1 = datetime.strptime(t1, '%Y-%m-%d %H:%M:%S')
             delta = t1 - t0
             return t0 + delta / 2
@@ -183,17 +184,17 @@ if __name__ == "__main__":
         print "No API key in config.ini, you must setup an OpenWeatherMap API key for this skill to work"
     elif len(config.get("secret").get("api_key")) == 0:
         print "No API key in config.ini, you must setup an OpenWeatherMap API key for this skill to work"
-    
+
     skill_locale = config.get("secret", {"locale":"en_US"}).get("locale", u"en_US")
-    
+
     if skill_locale == u"":
         print "No locale information is found!"
         print "Please edit 'config.ini' file, give either en_US, fr_FR or es_ES refering to the language of your assistant"
         sys.exit(1)
-        
+
     skill = SnipsOWM(config["secret"]["api_key"],
             config["secret"]["default_location"],locale=skill_locale.decode('ascii'))
-    
+
     lang = "EN"
     with Hermes(MQTT_ADDR.encode("ascii")) as h:
         h.skill = skill
